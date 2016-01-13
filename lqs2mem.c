@@ -86,8 +86,6 @@ struct qemud_save_header {
  */
 
 #define QEMU_VM_FILE_MAGIC           0x5145564d
-#define QEMU_VM_FILE_VERSION_COMPAT  0x00000002
-#define QEMU_VM_FILE_VERSION         0x00000003
 #define QEMU_VM_EOF                  0x00
 #define QEMU_VM_SECTION_START        0x01
 #define QEMU_VM_SECTION_PART         0x02
@@ -241,7 +239,7 @@ int qemu_check(FILE *f)
 	}
 
 	DEBUG(VERBOSE, "QEMU-savevm version = %u\n", version);
-	if (version != QEMU_VM_FILE_VERSION) {
+	if (version < 3 || version > 4) {
 		printf("Unsupported QEMU-savevm version\n");
 		return -1;
 	}
@@ -328,7 +326,7 @@ int ram_load(FILE *infp, FILE *outfp, char *section_name, int version_id)
 	uint8_t page[PAGE_SIZE];
 	uint64_t offset;
 
-	if (version_id != 4) {
+	if (version_id < 3 || version_id > 4) {
 		printf("Unsupported 'ram' section version %d\n", version_id);
 		return -1;
 	}
